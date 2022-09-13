@@ -5,8 +5,7 @@ use crate::{Factory, GenesisConfig, GenesisConfigFn, NodeConfigFn, Result, Swarm
 use anyhow::bail;
 use aptos_logger::info;
 use rand::rngs::StdRng;
-use std::time::Duration;
-use std::{convert::TryInto, num::NonZeroUsize};
+use std::{convert::TryInto, num::NonZeroUsize, time::Duration};
 
 pub mod chaos;
 mod cluster_helper;
@@ -99,6 +98,7 @@ impl Factory for K8sFactory {
         cleanup_duration: Duration,
         genesis_config_fn: Option<GenesisConfigFn>,
         node_config_fn: Option<NodeConfigFn>,
+        existing_db_tag: Option<String>,
     ) -> Result<Box<dyn Swarm>> {
         let genesis_modules_path = match genesis_config {
             Some(config) => match config {
@@ -143,6 +143,7 @@ impl Factory for K8sFactory {
                 self.enable_haproxy,
                 genesis_config_fn,
                 node_config_fn,
+                existing_db_tag,
             )
             .await
             {

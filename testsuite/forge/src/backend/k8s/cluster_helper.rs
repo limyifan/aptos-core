@@ -399,6 +399,7 @@ pub async fn install_testnet_resources(
     enable_haproxy: bool,
     genesis_helm_config_fn: Option<GenesisConfigFn>,
     node_helm_config_fn: Option<NodeConfigFn>,
+    existing_db_tag: Option<String>,
 ) -> Result<(HashMap<PeerId, K8sNode>, HashMap<PeerId, K8sNode>)> {
     let kube_client = create_k8s_client().await;
 
