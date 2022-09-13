@@ -31,7 +31,7 @@ pub struct IndexerConfig {
     /// This will not delete any database contents, just transactions as it reprocesses them.
     /// Alternatively can set the `STARTING_VERSION` env var
     #[serde(default = "default_starting_version")]
-    pub starting_version: Option<u64>,
+    pub starting_version: Option<i64>,
 
     ///////////////////
     ///////////////////
@@ -109,7 +109,7 @@ fn default_enabled() -> bool {
     std::env::var("INDEXER_ENABLED").ok().is_some()
 }
 
-fn default_starting_version() -> Option<u64> {
+fn default_starting_version() -> Option<i64> {
     std::env::var("STARTING_VERSION")
         .ok()
         .and_then(|s| s.parse().ok())

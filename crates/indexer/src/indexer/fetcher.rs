@@ -248,8 +248,7 @@ async fn fetch_nexts(
             if let aptos_types::transaction::Transaction::BlockMetadata(ref txn) = t.transaction {
                 timestamp = txn.timestamp_usecs();
             }
-            let txn = converter.try_into_onchain_transaction(timestamp, t)?;
-            Ok(remove_null_bytes_from_txn(txn))
+            Ok(converter.try_into_onchain_transaction(timestamp, t)?)
         })
         .collect::<Result<_, anyhow::Error>>();
 
@@ -452,18 +451,6 @@ pub fn recurse_remove_null_bytes_from_json(sub_json: &mut Value) {
         }
         _ => {}
     }
-}
-
-pub fn remove_null_bytes_from_txn(txn: Transaction) -> Transaction {
-    let mut txn_json = serde_json::to_value(txn).unwrap();
-    recurse_remove_null_bytes_from_json(&mut txn_json);
-    serde_json::from_value::<Transaction>(txn_json).unwrap()
-}
-
-pub fn remove_null_bytes_from_txns(txns: Vec<Transaction>) -> Vec<Transaction> {
-    txns.into_iter()
-        .map(remove_null_bytes_from_txn)
-        .collect::<Vec<Transaction>>()
 }
 
 /// For mocking TransactionFetcher in tests

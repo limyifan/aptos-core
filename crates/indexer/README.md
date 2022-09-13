@@ -2,23 +2,29 @@
 
 > Tails the blockchain's transactions and pushes them into a postgres DB
 
-Tails the node utilizing the rest interface/client, and maintains state for each registered `TransactionProcessor`. On
-startup, by default, will retry any previously errored versions for each registered processor.
+A fullnode can fun an indexer with the proper configs. If enabled, the indexer will tail
+transactions in the fullnode with business logic from  each registered `TransactionProcessor`. On
+startup, by default, will restart from the first gap (e.g. version 5 if versions succeeded are 0, 1, 2, 3, 4, 6). 
 
 When developing your own, ensure each `TransactionProcessor` is idempotent, and being called with the same input won't
 result in an error if some or all of the processing had previously been completed.
 
 Example invocation:
+First add in fullnode.yaml
+```
+storage:
+    enable_indexer: true
 
+indexer:
+    enabled: true
+    processor: "default_processor"
+    check_chain_id: true
+```
+
+The run 
 ```bash
-cargo run -- --pg-uri "postgresql://postgres@localhost:5432/postgres" \
-             --node-url "https://fullnode.devnet.aptoslabs.com/v1" \
-             --emit-every 10  \
-             --processor default_processor \
-             --check_chain_id
- ```
-
-Try running the indexer with `--help` to get more details
+INDEXER_DATABASE_URL=postgres://postgres@localhost:5432/postgres cargo run -p aptos-node --release -- -f ./fullnode.yaml
+```
 
 ## Requirements
 
@@ -37,20 +43,20 @@ Try running the indexer with `--help` to get more details
 6. `cargo install diesel_cli --no-default-features --features postgres`
 7. `diesel migration run --database-url postgresql://localhost/postgres`
 8. Start indexer
-```bash
-cargo run -- --pg-uri "postgresql://postgres@localhost:5432/postgres" \
-             --node-url "https://fullnode.devnet.aptoslabs.com/v1" \
-             --emit-every 10  \
-             --processor default_processor \
-             --check_chain_id
-# or
-cargo run -- --pg-uri "postgresql://postgres@localhost:5432/indexer_v2" \
-             --node-url "https://fullnode.devnet.aptoslabs.com/v1" \
-             --emit-every 10 \
-             --processor token_processor \
-             --check-chain-id \
-             --index-token-uri-data
-```
+   a. Modify fullnode.yaml
+      ```
+      storage:
+         enable_indexer: true
+
+      indexer:
+         enabled: true
+         processor: "default_processor"
+         check_chain_id: true
+      ```
+   b. Run fullnode with indexer
+      ```bash
+      INDEXER_DATABASE_URL=postgres://postgres@localhost:5432/postgres cargo run -p aptos-node --release -- -f ./fullnode.yaml
+      ```
 
 
 ### Optional PgAdmin4
