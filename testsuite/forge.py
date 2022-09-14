@@ -238,7 +238,7 @@ HUMIO_LOGS_LINK = (
 
 
 def prometheus_port_forward() -> None:
-    os.execvp("kubectl", ["kubectl", "port-forward", "prometheus", "9090"])
+    os.execvp("kubectl", ["kubectl", "port-forward", "svc/aptos-node-mon-aptos-monitoring-prometheus", "9090"])
 
 
 class Process:
@@ -1277,6 +1277,10 @@ def test(
     forge_cli_args: Optional[List[str]],
     test_args: Optional[List[str]],
 ) -> None:
+
+    # CANARY!!!
+    forge_test_suite = "three_region_simulation"
+
     """Run a forge test"""
     shell = LocalShell(verbose == "true")
     git = Git(shell)
