@@ -93,9 +93,10 @@ async function main() {
       readline.close();
     });
   });
-
   // :!:>publish
-  const modulePath = process.argv[2];
+  const packagePath1=process.argv[1].split("aptos-core")[0]
+  const packagePath2=process.argv[2].split("aptos-core/")[1]
+  const modulePath=packagePath1+"aptos-core/"+packagePath2
   const packageMetadata = fs.readFileSync(path.join(modulePath, "build", "Examples", "package-metadata.bcs"));
   const moduleData = fs.readFileSync(path.join(modulePath, "build", "Examples", "bytecode_modules", "moon_coin.mv"));
 
